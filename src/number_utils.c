@@ -6,95 +6,106 @@
 /*   By: achanel <achanel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/28 11:49:13 by achanel           #+#    #+#             */
-/*   Updated: 2021/10/05 16:29:14 by achanel          ###   ########.fr       */
+/*   Updated: 2021/10/14 15:13:38 by achanel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-void	sort_array(long *array, t_base *base)
+void	do_index(t_stack **stack, long *array)
+{
+	long	*tmp;
+	t_stack	*tmp_stack;
+	int		size;
+	int		i;
+
+	size = stack_len(*stack);
+	tmp = sort_array(array, size);
+	tmp_stack = (*stack);
+	while (tmp_stack)
+	{
+		i = 0;
+		while (tmp[i] || size > i)
+		{
+			if (tmp_stack->number == tmp[i])
+				tmp_stack->index = i + 1;
+			i++;
+		}
+		tmp_stack = tmp_stack->next;
+	}
+}
+
+long	*array_to_stack(t_stack *stack)
+{
+	int		i;
+	long	*array;
+
+	check_duplicates(stack);
+	array = (long *)malloc(sizeof(long) * stack_len(stack));
+	if (!array)
+		push_swap_error();
+	i = 0;
+	while (stack)
+	{
+		array[i] = stack->number;
+		stack = stack->next;
+		i++;
+	}
+	return (array);
+}
+
+long	*sort_array(long *array, int size)
 {
 	long	tmp;
 	int		i;
-	// int		j;
-	t_stack	*stack;
+	int		flag;
 
-	i = 0;
 	tmp = 0;
-	stack = base->a;
-	while (i < base->stack_len - 1)
+	flag = 1;
+	while (flag)
 	{
-		if (array[i] > array[i + 1])
+		flag = 0;
+		i = 0;
+		while (i < size - 1)
 		{
-			tmp = array[i];
-			array[i] = array[i + 1];
-			array[i + 1] = tmp;
-			i = 0;
-		}
-		else
+			if (array[i] > array[i + 1])
+			{
+				flag = 1;
+				tmp = array[i];
+				array[i] = array[i + 1];
+				array[i + 1] = tmp;
+			}
 			i++;
+		}
 	}
-	// i = 0;
-	// while (i < stack_len(base, 'a'))
-	// {
-	// 	j = 0;
-	// 	while (j < stack_len(base, 'a'))
-	// 	{
-	// 		if (stack->num == array[j])
-	// 			stack->order = j + 1;
-	// 		j++;
-	// 	}
-	// 	printf ("=order %d=", stack->order);
-	// 	stack = stack->next;
-	// 	i++;
-	// }
+	return (array);
 }
 
-void	find_midle(t_base *base, char stack_name)
+int	find_smallest_index(t_stack *stack)
 {
-	long	*array;
-	int		i;
-	t_stack	*stack;
-	int		middle;
-	
-	i = 0;
-	if (stack_name == 'a')
-		stack = base->a;
-	else
-		stack = base->b;
-	base->stack_len = stack_len(base, stack_name);
-	middle = base->stack_len / 2;
-	array = (long*)malloc(sizeof(long) * (base->stack_len + 1));
-	if (!array)
-		push_swap_error(base);
-	while (i < base->stack_len)
+	int		index;
+
+	index = stack->index;
+	while (stack)
 	{
-		array[i++] = stack->num;
+		if (stack->index < index)
+			index = stack->index;
 		stack = stack->next;
 	}
-	sort_array(array, base);
-	base->middle = array[middle];
-	free (array);
+	return (index);
 }
 
-// void	do_order(t_base *base)
-// {
-// 	int		i;
-// 	int		j;
-// 	long	*array;
-// 	t_stack	*stack;
+int	do_small(t_stack *stack)
+{
+	int	small;
 
-// 	i = 0;
-// 	stack = base->a;
-// 	array = (long*)malloc(sizeof(long) * (base->stack_len + 1));
-// 	if (!array)
-// 		push_swap_error(base);
-// 	while (i < base->stack_len)
-// 	{
-// 		array[i] = stack->num;
-// 		stack = stack->next;
-// 		i++;
-// 	}
-// 	sort_array(array, base->stack_len);
-
-// }
+	small = stack->number;
+	stack = stack->next;
+	while (stack)
+	{
+		if (stack->number < small)
+			small = stack->number;
+		stack = stack->next;
+	}
+	return (small);
+}

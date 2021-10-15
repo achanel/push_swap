@@ -13,8 +13,8 @@ HEADERS_DIRECTORY = ./includes/
 HEADERS = $(addprefix $(HEADERS_DIRECTORY), $(HEADERS_LIST))
 
 SRCS_DIRECTORY = ./src/
-SRCS_LIST	= push_swap.c do_swap.c do_push.c do_rotate.c do_check.c short_solver.c utils.c stack_utils.c\
-				number_utils.c steps_counter.c solver.c do_big_small.c
+SRCS_LIST	= push_swap.c do_single.c do_duble.c do_check.c short_solver.c utils.c stack_utils.c\
+				number_utils.c solver.c solver_utils.c
 SRCS = $(addprefix $(SRCS_DIRECTORY), $(SRCS_LIST))
 
 OBJS_DIRECTORY = objects/
@@ -23,8 +23,7 @@ OBJS = $(addprefix $(OBJS_DIRECTORY), $(OBJS_LIST))
 
 CC			= gcc
 
-# CFLAGS	= -Wall -Wextra -Werror -g #del -g
-CFLAGS	= -g
+CFLAGS	= -Wall -Wextra -Werror
 
 all:		${NAME}
 

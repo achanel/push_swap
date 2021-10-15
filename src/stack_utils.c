@@ -6,126 +6,72 @@
 /*   By: achanel <achanel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/28 11:09:54 by achanel           #+#    #+#             */
-/*   Updated: 2021/10/05 13:18:19 by achanel          ###   ########.fr       */
+/*   Updated: 2021/10/15 12:27:56 by achanel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-static void	add_new(t_base *base, t_stack **start, int nm)
+t_stack	*add_new(int number)
 {
-	*start = ft_calloc(sizeof(t_stack), sizeof(t_stack));
-	if (!start)
-		push_swap_error(base);
-	(*start)->next = *start;
-	(*start)->prev = *start;
-	(*start)->num = nm;
-	// (*start)->flag = fl;
-	// (*start)->order = or;
+	t_stack	*stack;
+
+	stack = (t_stack *)malloc(sizeof(struct s_stack));
+	if (!stack)
+		return (NULL);
+	stack->number = number;
+	stack->prev = NULL;
+	stack->next = NULL;
+	return (stack);
 }
 
-void	stack_add_back(t_base *base, char stack_name, int number)
+void	stack_add_back(t_stack **stack, int number)
 {
-	t_stack	**start;
+	t_stack	*start;
 	t_stack	*tmp;
 
-	if (stack_name == 'a')
-		start = &base->a;
-	else
-		start = &base->b;
-	if (!*start)
-		add_new(base, start, number);
-	else
+	tmp = add_new(number);
+	if (!(*stack))
 	{
-		tmp = ft_calloc(sizeof(t_stack), sizeof(t_stack));
-		if (!tmp)
-			push_swap_error(base);
-		tmp->next = *start;
-		tmp->prev = (*start)->prev;
-		(*start)->prev = tmp;
-		tmp->prev->next = tmp;
-		tmp->num = number;
+		(*stack) = tmp;
+		return ;
 	}
+	start = (*stack);
+	while (start->next)
+		start = start->next;
+	start->next = tmp;
+	tmp->prev = start;
 }
 
-void	stack_add_front(t_base *base, char stack_name, int nm)
+int	stack_len(t_stack *stack)
 {
-	t_stack	**start;
-	t_stack	*tmp;
-
-	if (stack_name == 'a')
-		start = &base->a;
-	else
-		start = &base->b;
-	if (!*start)
-		add_new(base, start, nm);
-	else
-	{
-		tmp = ft_calloc(sizeof(t_stack), sizeof(t_stack));
-		if (!tmp)
-			push_swap_error(base);
-		tmp->next = *start;
-		tmp->prev = (*start)->prev;
-		(*start)->prev = tmp;
-		tmp->prev->next = tmp;
-		tmp->num = nm;
-		// tmp->flag = fl;
-		// tmp->order = or;
-		*start = (*start)->prev;
-	}
-}
-
-void	stack_del_top(t_base *base, char stack_name)
-{
-	t_stack	**start;
-	t_stack	*tmp;
-
-	if (stack_name == 'a')
-		start = &base->a;
-	else
-		start = &base->b;
-	if (*start)
-	{
-		if ((*start)->next == *start)
-		{
-			free (*start);
-			*start = NULL;
-		}
-		else
-		{
-			tmp = *start;
-			(*start) = (*start)->next;
-			tmp->prev->next = (*start);
-			(*start)->prev = tmp->prev;
-			free (tmp);
-		}
-	}
-}
-
-int	stack_len(t_base *base, char stack_name)
-{
-	t_stack *end;
 	t_stack	*tmp;
 	int		len;
 
-	len = 1;
-	if (stack_name == 'a')
-		tmp = base->a;
-	else
-		tmp = base->b;
-	if (tmp)
-	{
-		if (stack_name == 'a')
-			end = base->a->prev;
-		else
-			end = base->b->prev;
-	}
+	if (!stack)
+		return (0);
+	len = 0;
+	tmp = stack;
 	while (tmp)
 	{
-		if (tmp == end)
-			break ;
 		len++;
 		tmp = tmp->next;
 	}
 	return (len);
+}
+
+int	find_mid_index(t_stack *stack)
+{
+	t_stack	*tmp;
+	int		mid;
+
+	tmp = stack;
+	mid = tmp->index;
+	while (tmp)
+	{
+		if (tmp->index > mid)
+			mid = tmp->index;
+		tmp = tmp->next;
+	}
+	return (mid - 2);
 }

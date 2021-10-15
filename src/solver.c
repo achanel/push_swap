@@ -6,118 +6,118 @@
 /*   By: achanel <achanel@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 09:47:47 by achanel           #+#    #+#             */
-/*   Updated: 2021/10/05 16:11:19 by achanel          ###   ########.fr       */
+/*   Updated: 2021/10/15 12:27:20 by achanel          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "push_swap.h"
 
-static void	reset_steps(t_base *base)
+int	position(t_stack *stack, int index)
 {
-	base->small_rotate = 0;
-	base->big_rotate = 0;
-	base->small_re_rotate = 0;
-	base->big_re_rotate = 0;
-	base->biggest = 0;
-	base->smallest = 0;
-	base->flag_big = 0;
-	base->flag_small = 0;
+	int	position;
+
+	position = 1;
+	while (stack->index != index)
+	{
+		position++;
+		stack = stack->next;
+	}
+	return (position);
 }
 
-static void	rotate_and_push(t_base *base)
+int	middle_postion(t_stack *stack, int index)
 {
-	if (base->small_rotate >= 0)
-		while (base->small_rotate--)
-			rotate_b(base);
-	else if (base->small_re_rotate >= 0)
-		while (base->small_re_rotate--)
-			reverse_rotate_b(base);
-	if (base->big_rotate >= 0)
-		while (base->big_rotate--)
-			rotate_b(base);
-	if (base->big_rotate >= 0)
-		while (base->big_rotate--)
-			reverse_rotate_b(base);
-	push_a(base);
-	if (base->flag_small == 1)
-		rotate_a(base);
-	if (base->flag_big == 1 || !base->b)
-		base->after_rotate++;
-	reset_steps(base);
-}
+	t_stack	*tmp;
+	int		small;
+	int		optimal;
+	int		next;
+	int		prev;
 
-static void	push_big_small(t_base *base)
-{
-	t_stack *stack;
-	t_stack *last;
-
-	stack = base->b;
-	last = base->b->prev;
+	optimal = 1;
+	small = find_smallest_index(stack);
+	if (index < small)
+		return (position(stack, small));
+	tmp = stack->next;
+	prev = stack->index;
+	next = tmp->index;
 	while (1)
 	{
-		while (stack->num != base->smallest)
-			stack = stack->next;
-		if (stack->num == base->smallest || stack->num == base->biggest)
-		{
-			rotate_and_push(base);
-			break ;
-		}
+		optimal++;
+		if (prev < index && next > index)
+			return (optimal);
+		prev = tmp->index;
+		if (!tmp->next)
+			tmp = stack;
 		else
-			stack = stack->next;
-		if (stack == last)
-			break ;
-		stack = base->b;
+			tmp = tmp->next;
+		next = tmp->index;
 	}
 }
 
-static void	push_half(t_base *base)
+int	optimal_move(int total_sum, t_steps *steps)
 {
+	int	i;
+
+	i = steps->ra;
+	if (steps->ra > steps->rb)
+		i = steps->rb;
+	while (i)
+	{
+		total_sum--;
+		i--;
+	}
+	i = steps->rra;
+	if (steps->rra > steps->rrb)
+		i = steps->rrb;
+	while (i)
+	{
+		total_sum--;
+		i--;
+	}
+	return (total_sum);
+}
+
+int	ft_steps_count(t_stack *stack_a, t_stack *stack_b,
+		t_steps *steps, int index)
+{
+	int		total_sum;
+
+	new_steps(steps);
+	steps->len = stack_len(stack_b);
+	steps->index = position(stack_b, index);
+	if (steps->len / 2 >= steps->index)
+		steps->rb = steps->index - 1;
+	else if (steps->len > 1)
+		steps->rrb = steps->len - steps->index + 1;
+	steps->len = stack_len(stack_a);
+	steps->index = middle_postion(stack_a, index);
+	if (steps->len / 2 >= steps->index)
+		steps->ra = steps->index - 1;
+	else
+		steps->rra = steps->len - steps->index + 1;
+	total_sum = steps->ra + steps->rb + steps->rra + steps->rrb;
+	return (optimal_move(total_sum, steps));
+}
+
+void	sort_b(t_base *base, t_steps *steps)
+{
+	int		steps_count;
+	int		min;
 	t_stack	*stack;
-	t_stack	*last;
-	int		i;
+	t_stack	*m;
 
-	i = 0;
-	stack = base->a;
-	last = base->a->prev;
-	do_small(base, 'a');
-	while (1)
+	min = -1;
+	stack = base->b;
+	while (stack)
 	{
-		if (stack == last)
-			i = 1;
-		if (base->base_flag == 1 && stack->num <= base->middle)
-			push_b(base);
-		else if (base->base_flag == 2 && stack->num > base->middle)
-			push_b(base);
-		else if (stack->num == base->smallest)
-			break ;
-		else
-			rotate_a(base);
-		if (i == 1)
-			break ;
-		stack = base->a;
-	}
-	reset_steps(base);
-}
-
-void	start_sort(t_base *base)
-{
-	base->base_flag = 1;
-	find_midle(base, 'a');
-	while (base->a)
-	{
-		push_half(base);
-		while (base->b)
+		steps_count = ft_steps_count(base->a, base->b, steps, stack->index);
+		if (min == -1 || steps_count <= min)
 		{
-			do_big_small(base, 'b');
-			steps_counter(base, 'b');
-			if (base->b && (base->small_rotate >= 0 || base->small_re_rotate >= 0 ||
-				base->big_rotate >= 0 || base->big_re_rotate >= 0))
-				push_big_small(base);
+			min = steps_count;
+			m = stack;
 		}
-		while (--base->after_rotate > -1)
-			rotate_a(base);
-		base->base_flag++;
-		if (base->base_flag == 3)
-			break ;
+		stack = stack->next;
 	}
+	min = ft_steps_count(base->a, base->b, steps, m->index);
+	sort_b_helper(&(base->a), &(base->b), steps);
 }
