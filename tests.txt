@@ -1,0 +1,39 @@
+python3 pyviz.py `ruby -e "puts (-200..200).to_a.shuffle.join(' ')"` 
+
+ARG=`ruby -e "puts (1..500).to_a.shuffle.join(' ')"`; ./push_swap $ARG | ./checker_Mac $ARG
+
+leaks --atExit -- ./push_swap
+
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "(lldb) Launch",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/push_swap",
+			"args": [12 17 15 2 1 14 16 9 4 13 10 5 7 11 8 20 18 19 3 6],
+			"stopAtEntry": true,
+			"cwd": "${workspaceFolder}",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "lldb"
+		},
+
+		{
+			"name": "gcc build and debug active file",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "enter program name, for example ${workspaceFolder}/push_swap",
+			"args": [],
+			"stopAtEntry": false,
+			"cwd": "${fileDirname}",
+			"environment": [],
+			"externalConsole": false,
+			"MIMode": "lldb"
+		}
+	]
+}
