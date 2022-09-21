@@ -7,6 +7,8 @@ using the lowest possible number of actions.
 
 - [x] Mandatory part
 
+Push_swap is an algorithm project of the common core in 42 school. There is 2 stacks named `a` and `b`, and the goal is to sort in ascending order numbers into stack a with a limited set of operations :
+
 # Operationals
 
 * sa (swap a): Swap the first 2 elements at the top of stack a. Do nothing if there is only one or no elements.
@@ -45,7 +47,7 @@ To run push swap and count the number of instructions :
 ARG="4 67 3 87 23"; ./push_swap $ARG | wc -l
 ```
 
-# Run push_swap with the checker
+Run push_swap with the checker :
 
 ```shell
 ARG="4 67 3 87 23"; ./push_swap $ARG | ./checker_Mac $ARG
