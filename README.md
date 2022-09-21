@@ -31,7 +31,7 @@ using the lowest possible number of actions.
 
 * rrr : rra and rrb at the same time.
 
-![pushswap]
+![basic](sort.png)
 
 # RUN
 - [x] Mandatory part
